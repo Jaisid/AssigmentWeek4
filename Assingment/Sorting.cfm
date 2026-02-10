@@ -32,6 +32,7 @@
 
         <cfloop index="k" from="1" to="#n#">
             <cfoutput>
-                <p>Sorted Array from List: #arrList[k]#</p>
+                <p>Sorted Array from List: #SortedList[k]#</p>
             </cfoutput>
-    </body>List
+        </cfloop>
+    </body>

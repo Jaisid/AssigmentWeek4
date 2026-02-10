@@ -1,83 +1,184 @@
+<!DOCTYPE html>
 <html>
-    <head>
-        <title> List Page </title>    
-    </head>
+<head>
+    <title>Programs Page</title>
 
-    <body>
-       <h1>Prime or not</h1>
-        <form method="post">
-            ENTER A NUMBER:
-            <input type="text" name="num" required>
-            <input type="submit" value="CHECK">
-        </form>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            margin: 20px;
+        }
 
-        <cfif structKeyExists(form,"num")>
-            <cfset variables.number = form.num>
-            <cfset variables.isPrime = true>
+        h1 {
+            color: #007bff;
+        }
 
-            <!--- Any number less then 1 is not prime --->
-            <cfif variables.number LTE 1>
-                <cfset variables.isPrime = false>
-            <cfelse>
-                <cfloop from="2" to ="#variables.number -1#" index="i">
-                    <cfif variables.number MOD i EQ 0>
-                        <cfset variables.isPrime = false>
-                        <cfbreak>
-                    </cfif>
-                </cfloop>
+        form {
+            background: white;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.15);
+        }
+
+        input[type="text"] {
+            width: 90%;
+            padding: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"], input[type="button"] {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+        }
+
+        input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ===================================================== -->
+<!-- ✅ UDF: Reverse String Function -->
+<!-- ===================================================== -->
+<cffunction name="reverseText" returnType="string">
+    <cfargument name="text" type="string" required="yes">
+
+    <cfset var reversed = "">
+
+    <cfloop from="#len(arguments.text)#" to="1" step="-1" index="i">
+        <cfset reversed &= mid(arguments.text, i, 1)>
+    </cfloop>
+
+    <cfreturn reversed>
+</cffunction>
+
+
+<!-- ===================================================== -->
+<!-- ✅ PRIME NUMBER CHECK -->
+<!-- ===================================================== -->
+<h1>Prime Number Checker</h1>
+
+<form method="post">
+    Enter a Number:
+    <input type="text" name="num" required>
+    <input type="submit" value="Check Prime">
+</form>
+
+<cfif structKeyExists(form, "num")>
+
+    <cfset number = val(form.num)>
+    <cfset isPrime = true>
+
+    <!--- Prime Logic --->
+    <cfif number LTE 1>
+        <cfset isPrime = false>
+    <cfelse>
+        <cfloop from="2" to="#number-1#" index="i">
+            <cfif number MOD i EQ 0>
+                <cfset isPrime = false>
+                <cfbreak>
             </cfif>
-            <cfoutput>
-            <cfif variables.isPrime>
-                <p style="color:green">#variables.number# is a prime number.</p>
-            <cfelse>
-                <p style="color:red">#variables.number# is not a prime number.</p>
-            </cfif> 
-            </cfoutput>
+        </cfloop>
+    </cfif>
+
+    <!--- Output Result --->
+    <cfoutput>
+        <p class="result #isPrime ? 'success' : 'error'#">
+            #number# is 
+            <cfif isPrime> a Prime Number ✅ <cfelse> NOT a Prime Number ❌ </cfif>
+        </p>
+    </cfoutput>
+
+</cfif>
+
+
+<!-- ===================================================== -->
+<!-- ✅ STRING REVERSE -->
+<!-- ===================================================== -->
+<h1>Reverse a String</h1>
+
+<form method="post">
+    Enter a String:
+    <input type="text" name="str" required>
+    <input type="submit" value="Reverse">
+</form>
+
+<cfif structKeyExists(form, "str")>
+
+    <cfset originalString = form.str>
+    <cfset reversedString = reverseText(originalString)>
+
+    <cfoutput>
+        <p class="result success">
+            Original: #originalString#
+        </p>
+        <p class="result success">
+            Reversed: #reversedString#
+        </p>
+    </cfoutput>
+
+</cfif>
+
+
+<!-- ===================================================== -->
+<!-- ✅ PALINDROME CHECK -->
+<!-- ===================================================== -->
+<h1>Palindrome Checker</h1>
+
+<form method="post">
+    Enter a String:
+    <input type="text" name="palindrome" required>
+    <input type="submit" value="Check Palindrome">
+</form>
+
+<cfif structKeyExists(form, "palindrome")>
+
+    <cfset inputString = form.palindrome>
+    <cfset reversedInput = reverseText(inputString)>
+
+    <cfoutput>
+        <cfif inputString EQ reversedInput>
+            <p class="result success">
+                #inputString# is a Palindrome 😊
+            </p>
+        <cfelse>
+            <p class="result error">
+                #inputString# is NOT a Palindrome 😔
+            </p>
         </cfif>
+    </cfoutput>
 
-        <H1>reverse a String</H1>
-         <form method="post">
-            ENTER A STRING:
-            <input type="text" name="str" required>
-            <input type="submit" value="REVERSE">
-        </form>
+</cfif>
 
-        <cfif structKeyExists(form,"str")>
-            <cfset variables.originalString = form.str>
-            <cfset variables.RevesedString ="">
-            <cfloop from ="#len(variables.originalString)#" to="1" step="-1" index="j">
-                <cfset variables.RevesedString = variables.RevesedString & Mid(variables.originalString,j,1)>
-            </cfloop>
-            <cfoutput>
-                <p>Original String: #variables.originalString#</p>
-                <p>Reversed String: #variables.RevesedString#</p>
-            </cfoutput>
-        </cfif>
 
-        <cfdump var="#variables#">
-        <h1>Palindorm or not</h1>
-        <form method="post">
-            ENTER A STRING:
-            <input type="text" name="palindrome" required>
-            <input type="submit" value="CHECK">
-        </form>
-        <cfif structKeyExists(form,"palindrome")>
-            <cfset  variables.inputstring = form.palindrome>
-            <cfset variables.reversedstring = "">
-            <cfloop from ="#len(variables.inputstring)#" to = "1" step = "-1" index="k">
-                <cfset variables.reversedstring = variables.reversedstring & Mid(variables.inputstring,k,1)>
-            </cfloop>
+<!-- ===================================================== -->
+<!-- ✅ Back Button -->
+<!-- ===================================================== -->
+<br>
+<input type="button" value="⬅ Go Back" onclick="history.back()">
 
-            <cfoutput>
-                <cfif variables.inputstring EQ variables.reversedstring>
-                    <p style="color:green">#variables.inputstring# is a palindrome.😊</p>
-                <cfelse>
-                    <p style="color:red">#variables.inputstring# is not a palindrome.😔</p>
-                </cfif>
-            </cfoutput>
-        </cfif>
-
-        <input type="button" value="Go Back" onclick="history.back()">
-    </body>
+</body>
 </html>
-    

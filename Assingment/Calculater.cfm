@@ -4,7 +4,7 @@
     <title>Calculator App</title>
 
     <style>
-        /* ===== Global ===== */
+        /* ===== Global Styles ===== */
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -35,7 +35,7 @@
             font-weight: bold;
         }
 
-        /* ===== Layout Container ===== */
+        /* ===== Layout ===== */
         .container {
             display: flex;
             height: calc(100vh - 60px);
@@ -79,16 +79,15 @@
         }
 
         /* ===== Calculator Card ===== */
-        .form {
+        .form-card {
             background: white;
             width: 350px;
             padding: 25px;
             border-radius: 15px;
-
             box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .form h2 {
+        .form-card h2 {
             text-align: center;
             margin-bottom: 20px;
             color: #333;
@@ -98,7 +97,6 @@
             width: 100%;
             padding: 10px;
             font-size: 16px;
-
             border: 1px solid #ccc;
             border-radius: 8px;
             margin-bottom: 15px;
@@ -134,88 +132,129 @@
             font-size: 18px;
             font-weight: bold;
         }
+
+        .error-box {
+            background: #fdecea;
+            border: 1px solid #e74c3c;
+            color: #c0392b;
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- ===== Header ===== -->
-    <div class="header">
-        <h1>Calculator Dashboard</h1>
-        <div class="user">Welcome, Jai 👋</div>
+<!-- ========================================================= -->
+<!-- ✅ CFML Logic Section (Keep All Logic at Top) -->
+<!-- ========================================================= -->
+
+<cfset result = "">
+<cfset isError = false>
+
+<cfif structKeyExists(form, "operations")>
+
+    <!--- Safe Form Parameters --->
+    <cfparam name="form.number1" default="0">
+    <cfparam name="form.number2" default="0">
+    <cfparam name="form.operations" default="">
+
+    <cfset num1 = val(form.number1)>
+    <cfset num2 = val(form.number2)>
+    <cfset operation = form.operations>
+
+    <!--- Calculator Logic --->
+    <cfswitch expression="#operation#">
+
+        <cfcase value="add">
+            <cfset result = num1 + num2>
+        </cfcase>
+
+        <cfcase value="subtract">
+            <cfset result = num1 - num2>
+        </cfcase>
+
+        <cfcase value="multiply">
+            <cfset result = num1 * num2>
+        </cfcase>
+
+        <cfcase value="divide">
+            <cfif num2 EQ 0>
+                <cfset result = "Error: Division by Zero">
+                <cfset isError = true>
+            <cfelse>
+                <cfset result = num1 / num2>
+            </cfif>
+        </cfcase>
+
+        <cfdefaultcase>
+            <cfset result = "Invalid Operation">
+            <cfset isError = true>
+        </cfdefaultcase>
+
+    </cfswitch>
+
+</cfif>
+
+<!-- ========================================================= -->
+<!-- ✅ Page Layout -->
+<!-- ========================================================= -->
+
+<!-- ===== Header ===== -->
+<div class="header">
+    <h1>Calculator Dashboard</h1>
+    <div class="user">Welcome, Jai 👋</div>
+</div>
+
+<!-- ===== Layout ===== -->
+<div class="container">
+
+    <!-- ===== Sidebar ===== -->
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <a href="Calculater.cfm">🏠 Dashboard</a>
+        <a href="Assign.cfm">📝 Prime Checker</a>
+        <a href="Assign.cfm">📝 Reverse String</a>
+        <a href="Assign.cfm">📝 Palindrome</a>
+        <a href="Sorting.cfm">📝 Sorting</a>
     </div>
 
-    <!-- ===== Layout ===== -->
-    <div class="container">
+    <!-- ===== Main Content ===== -->
+    <div class="main-content">
 
-        <!-- ===== Sidebar ===== -->
-        <div class="sidebar">
-            <h2>Menu</h2>
-            <a href="#">🏠 Programs </a>
-            <a href="Assign.cfm">📝 Prime or Not</a>
-            <a href="Assign.cfm">📝 Reverse the string</a>
-            <a href="Assign.cfm">📝 Palindorm</a>
-            <a href="Sorting.cfm">📝 Sorting </a>
-        </div>
+        <!-- Calculator Form -->
+        <form method="post" class="form-card">
 
-        <!-- ===== Main Content ===== -->
-        <div class="main-content">
+            <h2>Calculator App</h2>
 
-            <!-- Calculator Form -->
-            <form method="post" class="form">
+            <input type="number" name="number1" placeholder="Enter Number 1" required>
 
-                <h2>Calculator App</h2>
+            <input type="number" name="number2" placeholder="Enter Number 2" required>
 
-                <input type="number" name="number1" placeholder="Enter Number 1" required>
+            <select name="operations" required>
+                <option value="">Select Operation</option>
+                <option value="add">ADD</option>
+                <option value="subtract">SUBTRACT</option>
+                <option value="multiply">MULTIPLY</option>
+                <option value="divide">DIVIDE</option>
+            </select>
 
-                <input type="number" name="number2" placeholder="Enter Number 2" required>
+            <input type="submit" value="Calculate">
 
-                <select name="operations" required>
-                    <option value="">Select Operation</option>
-                    <option value="add">ADD</option>
-                    <option value="subtract">SUBTRACT</option>
-                    <option value="multiply">MULTIPLY</option>
-                    <option value="divide">DIVIDE</option>
-                </select>
+            <!-- Result Display -->
+            <cfif result NEQ "">
+                <cfoutput>
+                    <div class="result-box #isError ? 'error-box' : ''#">
+                        Result: #result#
+                    </div>
+                </cfoutput>
+            </cfif>
 
-                <input type="submit" value="Calculate">
+        </form>
 
-                <!-- CFML Logic -->
-                <cfif structKeyExists(form,"operations")>
-
-                    <cfset num1 = form.number1>
-                    <cfset num2 = form.number2>
-                    <cfset ops  = form.operations>
-
-                    <cfif ops EQ "add">
-                        <cfset result = num1 + num2>
-
-                    <cfelseif ops EQ "subtract">
-                        <cfset result = num1 - num2>
-
-                    <cfelseif ops EQ "multiply">
-                        <cfset result = num1 * num2>
-
-                    <cfelseif ops EQ "divide">
-                        <cfif num2 EQ 0>
-                            <cfset result = "Error: Division by zero">
-                        <cfelse>
-                            <cfset result = num1 / num2>
-                        </cfif>
-                    </cfif>
-
-                    <cfoutput>
-                        <div class="result-box">
-                            Result: #result#
-                        </div>
-                    </cfoutput>
-
-                </cfif>
-
-            </form>
-
-        </div>
     </div>
+</div>
+
+<!-- Footer Include -->
 <cfinclude template="Includes/footer.cfm">
+
 </body>
 </html>
